@@ -1,16 +1,54 @@
 <template>
-  <div class="item">
-    <i>
-      <slot name="icon"></slot>
-    </i>
-    <div class="details">
-      <h3>
-        <slot name="heading"></slot>
-      </h3>
-      <slot></slot>
-    </div>
+  <div v-if="loading">
+    <h1>cargando</h1>
+  </div>
+  <div v-else>
+    <ul>
+      <li v-for="(character, index) in character" :key="index">
+        {{ character.name }}
+      </li>
+    </ul>
   </div>
 </template>
+
+<script setup>
+import { onMounted, ref } from "vue";
+import { fetchCharacters } from "@/modules/characters";
+
+const loading = ref(false);
+const character = ref([]);
+
+onMounted(() => {
+  fetch();
+});
+
+async function fetch() {
+  loading.value = true;
+  let res = await fetchCharacters();
+  character.value = res.results;
+  loading.value = false;
+}
+// --- With Objects ----
+// export default {
+//   data() {
+//     return {
+//       loading: false,
+//       character: [],
+//     };
+//   },
+//   methods: {
+//     async fetch() {
+//       this.loading = true;
+//       let res = await fetchCharacters();
+//       this.character = res.results;
+//       this.loading = false;
+//     },
+//   },
+//   mounted() {
+//     this.fetch();
+//   },
+// };
+</script>
 
 <style scoped>
 .item {
@@ -58,7 +96,7 @@ h3 {
   }
 
   .item:before {
-    content: ' ';
+    content: " ";
     border-left: 1px solid var(--color-border);
     position: absolute;
     left: 0;
@@ -67,7 +105,7 @@ h3 {
   }
 
   .item:after {
-    content: ' ';
+    content: " ";
     border-left: 1px solid var(--color-border);
     position: absolute;
     left: 0;
